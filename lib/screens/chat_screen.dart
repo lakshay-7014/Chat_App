@@ -1,3 +1,4 @@
+import 'package:chat_app/screens/welcome_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -88,12 +89,42 @@ class _ChatScreenState extends State<ChatScreen> {
                         itemBuilder: (context, index) {
                           DocumentSnapshot ds = snapshot.data!.docs[index];
                           // print(ds['text']);
-                          return Row(
-                            children: [
-                              Expanded(
-                                child: Text(ds['text']),
-                              ),
-                            ],
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10, right: 10, top: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  ds['sender'],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Material(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(15),
+                                      bottomLeft: Radius.circular(15),
+                                      bottomRight: Radius.circular(15)),
+                                  color: Colors.lightBlueAccent,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 20),
+                                    child: Text(
+                                      ds['text'],
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 17,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           );
                         });
                   }
@@ -139,3 +170,42 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
+//
+// return Padding(
+// padding: const EdgeInsets.only(
+// left: 10, right: 10, top: 10),
+// child: Row(
+// children: [
+// Expanded(
+// child: Text(
+// ds['sender'],
+// style: TextStyle(
+// fontSize: 12,
+// color: Colors.black54,
+// ),
+// ),
+// ),
+// SizedBox(
+// height: 5,
+// ),
+// Material(
+// borderRadius: BorderRadius.only(
+// topLeft: Radius.circular(15),
+// bottomLeft: Radius.circular(15),
+// bottomRight: Radius.circular(15)),
+// color: Colors.lightBlueAccent,
+// child: Padding(
+// padding: const EdgeInsets.symmetric(
+// vertical: 10, horizontal: 20),
+// child: Text(
+// ds['text'],
+// style: TextStyle(
+// color: Colors.white,
+// fontSize: 17,
+// ),
+// ),
+// ),
+// ),
+// ],
+// ),
+// );
