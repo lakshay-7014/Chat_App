@@ -5,22 +5,26 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/constants.dart';
 
+bool isMe = false;
+final _fireStore =
+    FirebaseFirestore.instance; //instance to store data in firestore
+
 class ChatScreen extends StatefulWidget {
   static const String id = 'chat_screen';
 
-  const ChatScreen({Key? key}) : super(key: key);
+  ChatScreen({Key? key}) : super(key: key);
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
   final _auth = FirebaseAuth.instance;
-  final _fireStore =
-      FirebaseFirestore.instance; //instance to store data in firestore
+
   dynamic loggedInUser;
   late String messageText;
   final TextEditingController controller = TextEditingController();
   late Stream<QuerySnapshot> stream;
+
   @override
   void initState() {
     super.initState();
@@ -88,12 +92,22 @@ class _ChatScreenState extends State<ChatScreen> {
                         itemCount: snapshot.data?.docs.length,
                         itemBuilder: (context, index) {
                           DocumentSnapshot ds = snapshot.data!.docs[index];
+                          final messageSender = ds['sender'];
+                          final currentUser = loggedInUser.email;
+
+                          if (currentUser == messageSender) {
+                            isMe = true;
+                          } else {
+                            isMe = false;
+                          }
                           // print(ds['text']);
                           return Padding(
                             padding: const EdgeInsets.only(
                                 left: 10, right: 10, top: 10),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: isMe
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   ds['sender'],
@@ -106,18 +120,26 @@ class _ChatScreenState extends State<ChatScreen> {
                                   height: 5,
                                 ),
                                 Material(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(15),
-                                      bottomLeft: Radius.circular(15),
-                                      bottomRight: Radius.circular(15)),
-                                  color: Colors.lightBlueAccent,
+                                  borderRadius: isMe
+                                      ? BorderRadius.only(
+                                          topLeft: Radius.circular(15),
+                                          bottomLeft: Radius.circular(15),
+                                          bottomRight: Radius.circular(15))
+                                      : BorderRadius.only(
+                                          topRight: Radius.circular(15),
+                                          bottomLeft: Radius.circular(15),
+                                          bottomRight: Radius.circular(15)),
+                                  color: isMe
+                                      ? Colors.lightBlueAccent
+                                      : Colors.grey,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 10, horizontal: 20),
                                     child: Text(
                                       ds['text'],
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color:
+                                            isMe ? Colors.white : Colors.black,
                                         fontSize: 17,
                                       ),
                                     ),
@@ -170,42 +192,3 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
-//
-// return Padding(
-// padding: const EdgeInsets.only(
-// left: 10, right: 10, top: 10),
-// child: Row(
-// children: [
-// Expanded(
-// child: Text(
-// ds['sender'],
-// style: TextStyle(
-// fontSize: 12,
-// color: Colors.black54,
-// ),
-// ),
-// ),
-// SizedBox(
-// height: 5,
-// ),
-// Material(
-// borderRadius: BorderRadius.only(
-// topLeft: Radius.circular(15),
-// bottomLeft: Radius.circular(15),
-// bottomRight: Radius.circular(15)),
-// color: Colors.lightBlueAccent,
-// child: Padding(
-// padding: const EdgeInsets.symmetric(
-// vertical: 10, horizontal: 20),
-// child: Text(
-// ds['text'],
-// style: TextStyle(
-// color: Colors.white,
-// fontSize: 17,
-// ),
-// ),
-// ),
-// ),
-// ],
-// ),
-// );
